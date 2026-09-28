@@ -1,0 +1,245 @@
+{
+  "region": "California, USA",
+  "total_cities": 25,
+  "total_edges": 40,
+  "connected": true,
+  "distance_unit": "miles",
+  "sources": {
+    "geocoding": "Nominatim OpenStreetMap API",
+    "routing": "OSRM Routing API (router.project-osrm.org, driving profile)"
+  },
+  "locations": {
+    "Eureka, CA": {
+      "lat": 40.8018746,
+      "lon": -124.1707558
+    },
+    "Redding, CA": {
+      "lat": 40.5863563,
+      "lon": -122.391675
+    },
+    "Chico, CA": {
+      "lat": 39.7284945,
+      "lon": -121.8374777
+    },
+    "Santa Rosa, CA": {
+      "lat": 38.4404925,
+      "lon": -122.7141049
+    },
+    "Sacramento, CA": {
+      "lat": 38.5810606,
+      "lon": -121.493895
+    },
+    "South Lake Tahoe, CA": {
+      "lat": 38.9319293,
+      "lon": -119.9780188
+    },
+    "San Francisco, CA": {
+      "lat": 37.7879363,
+      "lon": -122.4075201
+    },
+    "Oakland, CA": {
+      "lat": 37.8044557,
+      "lon": -122.271356
+    },
+    "San Jose, CA": {
+      "lat": 37.3361663,
+      "lon": -121.890591
+    },
+    "Stockton, CA": {
+      "lat": 37.9577016,
+      "lon": -121.290779
+    },
+    "Modesto, CA": {
+      "lat": 37.6393419,
+      "lon": -120.9968892
+    },
+    "Merced, CA": {
+      "lat": 37.1641544,
+      "lon": -120.7678602
+    },
+    "Fresno, CA": {
+      "lat": 36.7394421,
+      "lon": -119.78483
+    },
+    "Salinas, CA": {
+      "lat": 36.6744117,
+      "lon": -121.655037
+    },
+    "San Luis Obispo, CA": {
+      "lat": 35.3540209,
+      "lon": -120.375716
+    },
+    "Bakersfield, CA": {
+      "lat": 35.3738712,
+      "lon": -119.019463
+    },
+    "Santa Barbara, CA": {
+      "lat": 34.4221319,
+      "lon": -119.702667
+    },
+    "Los Angeles, CA": {
+      "lat": 34.0536909,
+      "lon": -118.242766
+    },
+    "Anaheim, CA": {
+      "lat": 33.8347516,
+      "lon": -117.911732
+    },
+    "San Bernardino, CA": {
+      "lat": 34.8253019,
+      "lon": -116.0833144
+    },
+    "Riverside, CA": {
+      "lat": 33.9824949,
+      "lon": -117.374238
+    },
+    "Barstow, CA": {
+      "lat": 34.8986215,
+      "lon": -117.0244313
+    },
+    "Palm Springs, CA": {
+      "lat": 33.8246269,
+      "lon": -116.540303
+    },
+    "San Diego, CA": {
+      "lat": 32.7157062,
+      "lon": -117.1638284
+    },
+    "El Centro, CA": {
+      "lat": 32.792,
+      "lon": -115.563051
+    }
+  },
+  "graph": {
+    "Eureka, CA": {
+      "Santa Rosa, CA": 216.82,
+      "Redding, CA": 147.21
+    },
+    "Redding, CA": {
+      "Eureka, CA": 147.21,
+      "Chico, CA": 72.91,
+      "Sacramento, CA": 161.4
+    },
+    "Chico, CA": {
+      "Redding, CA": 72.91,
+      "Sacramento, CA": 89.59
+    },
+    "Santa Rosa, CA": {
+      "Eureka, CA": 216.82,
+      "San Francisco, CA": 54.74,
+      "Sacramento, CA": 94.79
+    },
+    "Sacramento, CA": {
+      "Redding, CA": 161.4,
+      "Chico, CA": 89.59,
+      "Santa Rosa, CA": 94.79,
+      "Oakland, CA": 81.75,
+      "South Lake Tahoe, CA": 103.8,
+      "Stockton, CA": 49.19
+    },
+    "South Lake Tahoe, CA": {
+      "Sacramento, CA": 103.8,
+      "Stockton, CA": 136.87
+    },
+    "San Francisco, CA": {
+      "Santa Rosa, CA": 54.74,
+      "Oakland, CA": 10.48,
+      "San Jose, CA": 48.83
+    },
+    "Oakland, CA": {
+      "San Francisco, CA": 10.48,
+      "San Jose, CA": 40.76,
+      "Sacramento, CA": 81.75,
+      "Stockton, CA": 71.78
+    },
+    "San Jose, CA": {
+      "San Francisco, CA": 48.83,
+      "Oakland, CA": 40.76,
+      "Merced, CA": 92.98,
+      "Modesto, CA": 81.5,
+      "Salinas, CA": 59.68
+    },
+    "Stockton, CA": {
+      "Oakland, CA": 71.78,
+      "South Lake Tahoe, CA": 136.87,
+      "Sacramento, CA": 49.19,
+      "Modesto, CA": 31.62
+    },
+    "Modesto, CA": {
+      "Stockton, CA": 31.62,
+      "Merced, CA": 44.25,
+      "San Jose, CA": 81.5
+    },
+    "Merced, CA": {
+      "Modesto, CA": 44.25,
+      "Fresno, CA": 73.44,
+      "San Jose, CA": 92.98
+    },
+    "Fresno, CA": {
+      "Merced, CA": 73.44,
+      "Bakersfield, CA": 108.77,
+      "Salinas, CA": 141.71,
+      "San Luis Obispo, CA": 129.75
+    },
+    "Salinas, CA": {
+      "San Jose, CA": 59.68,
+      "San Luis Obispo, CA": 136.14,
+      "Fresno, CA": 141.71
+    },
+    "San Luis Obispo, CA": {
+      "Salinas, CA": 136.14,
+      "Santa Barbara, CA": 121.59,
+      "Bakersfield, CA": 120.74,
+      "Fresno, CA": 129.75
+    },
+    "Bakersfield, CA": {
+      "Fresno, CA": 108.77,
+      "San Luis Obispo, CA": 120.74,
+      "Los Angeles, CA": 111.89,
+      "Barstow, CA": 128.87
+    },
+    "Santa Barbara, CA": {
+      "San Luis Obispo, CA": 121.59,
+      "Los Angeles, CA": 95.58
+    },
+    "Los Angeles, CA": {
+      "Santa Barbara, CA": 95.58,
+      "Bakersfield, CA": 111.89,
+      "Anaheim, CA": 26.34,
+      "San Bernardino, CA": 172.06
+    },
+    "Anaheim, CA": {
+      "Los Angeles, CA": 26.34,
+      "Riverside, CA": 37.42,
+      "San Diego, CA": 95.55
+    },
+    "San Bernardino, CA": {
+      "Los Angeles, CA": 172.06,
+      "Riverside, CA": 138.13,
+      "Barstow, CA": 59.66
+    },
+    "Riverside, CA": {
+      "Anaheim, CA": 37.42,
+      "San Bernardino, CA": 138.13,
+      "Palm Springs, CA": 54.45,
+      "San Diego, CA": 98.86
+    },
+    "Barstow, CA": {
+      "Bakersfield, CA": 128.87,
+      "San Bernardino, CA": 59.66
+    },
+    "Palm Springs, CA": {
+      "Riverside, CA": 54.45,
+      "El Centro, CA": 106.9
+    },
+    "San Diego, CA": {
+      "Anaheim, CA": 95.55,
+      "Riverside, CA": 98.86,
+      "El Centro, CA": 113.53
+    },
+    "El Centro, CA": {
+      "Palm Springs, CA": 106.9,
+      "San Diego, CA": 113.53
+    }
+  }
+}

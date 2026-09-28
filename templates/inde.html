@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>California Road Search</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; height: 100vh; display: flex; font: 14px/1.45 system-ui, sans-serif; color: #222; background: #fff; }
+  #side { width: 340px; padding: 16px 18px; overflow-y: auto; border-right: 1px solid #ddd; }
+  #map { flex: 1; }
+  h1 { font-size: 17px; margin: 0 0 2px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: #666; margin: 18px 0 6px;
+       padding-top: 12px; border-top: 1px solid #eee; }
+  .sub { color: #777; font-size: 12px; margin-bottom: 14px; }
+  label { display: block; font-size: 12px; color: #555; margin: 8px 0 3px; }
+  select, button { width: 100%; font: inherit; padding: 6px; border: 1px solid #bbb; border-radius: 3px; background: #fff; }
+  .buttons { display: flex; gap: 6px; margin-top: 12px; }
+  button { cursor: pointer; }
+  #btnRun { background: #222; color: #fff; border-color: #222; }
+  dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin: 0; }
+  dt { color: #666; }
+  dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+  p { margin: 4px 0 8px; }
+  #path { margin-top: 8px; }
+  #error { color: #b00; margin-top: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 3px 2px; border-bottom: 1px solid #eee; text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  tr.best td { font-weight: 600; }
+  .key { font-size: 12px; color: #666; }
+  .key b { font-weight: 600; }
+  @media (max-width: 700px) {
+    body { flex-direction: column-reverse; height: auto; }
+    #side { width: 100%; border-right: 0; }
+    #map { height: 55vh; flex: none; }
+  }
+</style>
+</head>
+<body>
+<div id="side">
+  <h1 id="title">California Road Search</h1>
+  <div class="sub" id="meta"></div>
+
+  <label for="start">From</label>
+  <select id="start"></select>
+  <label for="goal">To</label>
+  <select id="goal"></select>
+  <label for="algo">Algorithm</label>
+  <select id="algo">
+    <option value="bfs">Breadth-First Search (BFS)</option>
+    <option value="dfs">Depth-First Search (DFS)</option>
+    <option value="ucs">Uniform Cost Search (UCS)</option>
+    <option value="ids">Iterative Deepening Search (IDS)</option>
+    <option value="greedy">Greedy Best-First Search</option>
+    <option value="astar" selected>A* Search</option>
+  </select>
+  <div class="buttons">
+    <button id="btnRun">Run</button>
+    <button id="btnCompare">Compare all</button>
+    <button id="btnReset">Reset</button>
+  </div>
+  <div id="error"></div>
+
+  <h2>Algorithm Concept Note</h2>
+  <p><b>Main Idea:</b> <span id="cMain"></span></p>
+  <p><b>Node Selection:</b> <span id="cSel"></span></p>
+  <p><b>Information Used:</b> <span id="cInfo"></span></p>
+
+  <h2>Result</h2>
+  <dl>
+    <dt>Path cost</dt><dd id="rCost">-</dd>
+    <dt>Road segments</dt><dd id="rHops">-</dd>
+    <dt>Nodes expanded</dt><dd id="rExp">-</dd>
+    <dt>Runtime</dt><dd id="rTime">-</dd>
+    <dt>Straight-line distance</dt><dd id="rSld">-</dd>
+  </dl>
+  <div id="path"></div>
+  <p class="key">Map: <b style="color:#1a7f37">start</b>, <b style="color:#c62828">goal</b>,
+    <b style="color:#e08e00">expanded</b>, <b style="color:#555">not expanded</b></p>
+
+  <div id="compare" hidden>
+    <h2>All algorithms</h2>
+    <table>
+      <thead><tr><th>Algorithm</th><th>Miles</th><th>Segments</th><th>Expanded</th><th>ms</th></tr></thead>
+      <tbody id="compareRows"></tbody>
+    </table>
+  </div>
+</div>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+const SHORT = { bfs: "BFS", dfs: "DFS", ucs: "UCS", ids: "IDS", greedy: "Greedy", astar: "A*" };
+const $ = id => document.getElementById(id);
+const short = city => city.replace(", CA", "");
+
+let data = null, notes = {}, route = null;
+const dots = {};
+
+const map = L.map("map").setView([37.2, -119.5], 6);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 18, attribution: "&copy; OpenStreetMap contributors"
+}).addTo(map);
+
+function showNote(key) {
+  const n = notes[key];
+  if (!n) return;
+  $("cMain").textContent = n.concept.main;
+  $("cSel").textContent = n.concept.selection;
+  $("cInfo").textContent = n.concept.info;
+}
+
+function colorDots(expanded = [], start = $("start").value, goal = $("goal").value) {
+  const seen = new Set(expanded);
+  for (const [city, dot] of Object.entries(dots)) {
+    let color = seen.has(city) ? "#e08e00" : "#555";
+    if (city === start) color = "#1a7f37";
+    if (city === goal) color = "#c62828";
+    dot.setStyle({ fillColor: color, radius: city === start || city === goal ? 8 : 5 });
+  }
+}
+
+async function search(algorithm) {
+  const res = await fetch("/api/search", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ start: $("start").value, goal: $("goal").value, algorithm })
+  });
+  const out = await res.json();
+  if (!res.ok) throw new Error(out.message);
+  return out;
+}
+
+function show(r) {
+  const found = r.path.length > 0;
+  $("rCost").textContent = found ? r.cost.toFixed(2) + " mi" : "-";
+  $("rHops").textContent = found ? r.hops : "-";
+  $("rExp").textContent = r.nodes_expanded;
+  $("rTime").textContent = r.time_ms.toFixed(3) + " ms";
+  $("rSld").textContent = r.straight_line_miles.toFixed(2) + " mi";
+  $("path").textContent = found ? r.path.map(short).join(" → ") : "No path found.";
+
+  if (route) map.removeLayer(route);
+  colorDots(r.expanded_order, r.start, r.goal);
+  if (found) {
+    route = L.polyline(r.path.map(c => [data.locations[c].lat, data.locations[c].lon]),
+                       { color: "#1a7f37", weight: 5 }).addTo(map);
+    map.fitBounds(route.getBounds(), { padding: [50, 50], maxZoom: 9 });
+  }
+}
+
+function clearResult() {
+  if (route) { map.removeLayer(route); route = null; }
+  for (const id of ["rCost", "rHops", "rExp", "rTime", "rSld"]) $(id).textContent = "-";
+  $("path").textContent = "";
+  $("error").textContent = "";
+  $("compare").hidden = true;
+  colorDots();
+}
+
+async function init() {
+  try {
+    [data, notes] = await Promise.all([
+      fetch("/api/map").then(r => r.json()),
+      fetch("/api/algorithms").then(r => r.json())
+    ]);
+  } catch (e) {
+    $("error").textContent = "Could not load map data.";
+    return;
+  }
+  showNote($("algo").value);
+  $("title").textContent = "Road Search: " + data.region;
+  $("meta").textContent = `${data.total_cities} cities, ${data.total_edges} roads, distances in miles from OSRM`;
+
+  const cities = Object.keys(data.locations).sort();
+  if (!cities.length) { $("error").textContent = "map_data.json is empty. Run data_fetcher.py first."; return; }
+  for (const sel of [$("start"), $("goal")]) cities.forEach(c => sel.add(new Option(short(c), c)));
+  $("start").value = cities.includes("San Diego, CA") ? "San Diego, CA" : cities[0];
+  $("goal").value = cities.includes("Redding, CA") ? "Redding, CA" : cities[cities.length - 1];
+
+  const loc = data.locations, drawn = new Set();
+  for (const [a, nbrs] of Object.entries(data.graph)) {
+    for (const [b, miles] of Object.entries(nbrs)) {
+      const key = [a, b].sort().join("|");
+      if (drawn.has(key)) continue;
+      drawn.add(key);
+      L.polyline([[loc[a].lat, loc[a].lon], [loc[b].lat, loc[b].lon]], { color: "#888", weight: 2, opacity: 0.6 })
+        .bindTooltip(`${short(a)} - ${short(b)}: ${miles} mi`, { sticky: true })
+        .addTo(map);
+    }
+  }
+  for (const [city, c] of Object.entries(loc)) {
+    dots[city] = L.circleMarker([c.lat, c.lon], { radius: 5, color: "#fff", weight: 1, fillOpacity: 1 })
+      .bindTooltip(short(city))
+      .addTo(map);
+  }
+  map.fitBounds(Object.values(loc).map(c => [c.lat, c.lon]), { padding: [20, 20] });
+  colorDots();
+}
+
+$("algo").addEventListener("change", e => showNote(e.target.value));
+$("start").addEventListener("change", () => clearResult());
+$("goal").addEventListener("change", () => clearResult());
+$("btnReset").addEventListener("click", clearResult);
+
+$("btnRun").addEventListener("click", async () => {
+  $("error").textContent = "";
+  try { show(await search($("algo").value)); }
+  catch (e) { $("error").textContent = e.message; }
+});
+
+$("btnCompare").addEventListener("click", async () => {
+  $("error").textContent = "";
+  try {
+    const all = await Promise.all(Object.keys(SHORT).map(search));
+    const best = Math.min(...all.filter(r => r.path.length).map(r => r.cost));
+    $("compareRows").innerHTML = all.map(r =>
+      `<tr class="${Math.abs(r.cost - best) < 0.005 ? "best" : ""}">
+         <td>${SHORT[r.algorithm]}</td><td>${r.cost.toFixed(1)}</td><td>${r.hops}</td>
+         <td>${r.nodes_expanded}</td><td>${r.time_ms.toFixed(2)}</td></tr>`).join("");
+    $("compare").hidden = false;
+    show(all.find(r => r.algorithm === $("algo").value));
+  } catch (e) { $("error").textContent = e.message; }
+});
+
+init();
+</script>
+</body>
+</html>
