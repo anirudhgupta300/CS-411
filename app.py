@@ -17,7 +17,7 @@ import time
 from flask import Flask, jsonify, render_template, request
 
 from informed import astar, greedy_best_first, heuristic
-from uninformed_search import bfs, dfs, ids, ucs
+from uninformed import bfs, dfs, ids, ucs
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MAP_DATA_FILE = os.path.join(BASE_DIR, "map_data.json")

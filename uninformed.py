@@ -1,22 +1,4 @@
-"""
-uninformed.py
-=============
-Uninformed (blind) search algorithms over the road graph.
 
-Graph format (from map_data.json):
-    graph = {
-        "Fresno, CA": {"Merced, CA": 56.1, "Bakersfield, CA": 108.4, ...},
-        ...
-    }
-
-Every function has the signature  algo(graph, start, goal)  and returns a dict:
-    {
-        "path": [start, ..., goal]   (empty list if no path),
-        "cost": total road miles of the returned path,
-        "nodes_expanded": number of nodes expanded (goal-tested and successors generated),
-        "expanded_order": list of cities in the order they were expanded,
-    }
-"""
 
 import heapq
 from collections import deque

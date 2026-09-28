@@ -1,24 +1,8 @@
-"""
-informed.py
-===========
-Informed (heuristic) search algorithms over the road graph.
-
-Heuristic h(n): straight-line (great-circle / haversine) distance in miles from
-city n to the goal, computed from the Nominatim latitude/longitude stored in
-map_data.json. A car can never drive between two points in fewer miles than the
-straight line between them, so h(n) never overestimates the true remaining road
-distance (admissible). It also satisfies the triangle inequality with the road
-edges (consistent), which is what lets A* use an explored set safely.
-
-Every function has the signature  algo(graph, start, goal, locations)  and
-returns the same dict shape as uninformed.py:
-    {"path", "cost", "nodes_expanded", "expanded_order"}
-"""
 
 import heapq
 import math
 
-from uninformed_search import _check, _reconstruct, _result
+from uninformed import _check, _reconstruct, _result
 
 EARTH_RADIUS_MILES = 3958.8
 
@@ -44,7 +28,7 @@ def greedy_best_first(graph, start, goal, locations):
     """Always expand the frontier node that LOOKS closest to the goal (lowest h).
     Ignores the miles already driven, so it is fast but not optimal."""
     _check(graph, start, goal)
-    counter = 0                                    # tie-breaker for heapq
+    counter = 0                                    
     frontier = [(heuristic(start, goal, locations), counter, start)]
     parent = {start: None}
     explored = set()
@@ -76,7 +60,7 @@ def astar(graph, start, goal, locations):
     _check(graph, start, goal)
     counter = 0
     h0 = heuristic(start, goal, locations)
-    frontier = [(h0, counter, 0.0, start)]         # (f, tie, g, node)
+    frontier = [(h0, counter, 0.0, start)]         
     best_g = {start: 0.0}
     parent = {start: None}
     explored = set()
