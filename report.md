@@ -11,8 +11,8 @@
 
 ## Student Information 
 - **Name:** Anirudh Gupta
-- **UID (netID):** [Write your UID (netID) here]
-- **UIN:** [Write your UIN here]
+- **UID (netID):** agupt101
+- **UIN:** 655406023
 
 ---
 
