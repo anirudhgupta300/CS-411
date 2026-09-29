@@ -42,7 +42,7 @@
 ## Section 4: Deployed and Presentation Information
 - **Deployment Platform:** Render
 - **Live Deployment URL:** https://cs-411.onrender.com
-- **Video Presentation Link:** [Provide an accessible link to your 5–7 minute video presentation]
+- **Video Presentation Link:** https://drive.google.com/file/d/1_3muLQaVABzHWjacp0Bgj9bP9fvWLZ_N/view?usp=drive_link
 
 ---
 
